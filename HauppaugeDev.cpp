@@ -563,7 +563,7 @@ bool HauppaugeDev::Open(USBWrapper_t & usbio, bool ac3,
     }
     else
     {
-#if 0
+#if 1
         // Original EDID
         m_rxDev->setEDID(EDID_default, sizeof(EDID_default), EDID_default_SPAloc);
         LOG(Logger::NOTICE) << "Using 1080p6050 stereo EDID." << flush;
