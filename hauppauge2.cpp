@@ -150,6 +150,7 @@ int main(int argc, char *argv[])
          "3=AAC(Sub_frame), 5=Downmix")
 #endif
         ("boost,b", "Boost audio input gain.")
+        ("radio,u", "Radio service.")
         ("audiosamplerate,S", po::value<int>()->default_value(3),
          "Analog audio sample rate (-1=FOLLOW_INPUT, 0=NONE, 1=32KHz, "
          "2=44.1KHz, 3=48KHz, 4=96KHz, 5=192KHz, 6=16KHz)")
@@ -314,6 +315,7 @@ int main(int argc, char *argv[])
         params.audioCodec = static_cast<HAPI_AUDIO_CODEC>
                        (vm["codec"].as<int>());
     params.audioBoost = (vm.count("boost") != 0);
+    params.radio = (vm.count("radio") != 0);
     if (vm.count("audiosamplerate"))
         params.audioSamplerate = static_cast<HAPI_AUDIO_SAMPLE_RATE>
                                    (vm["audiosamplerate"].as<int>());

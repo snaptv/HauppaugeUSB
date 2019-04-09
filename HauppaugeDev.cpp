@@ -284,6 +284,43 @@ bool HauppaugeDev::init_cvbs(void)
     return true;
 }
 
+bool HauppaugeDev::init_analog_audio(void)
+{
+    // same as init_cvbs(), except assuming that only the analog audio inputs are in use. 
+    if (m_video_initialized != HAPI_VIDEO_CAPTURE_SOURCE_CVBS)
+    {
+        m_rxDev->setInput(RXI_CVBS);
+        usleep(500000);
+        m_rxDev->showInfo();
+        m_encDev->showInfo();
+    }
+
+    receiverOutputParams_t vp;
+    do
+    {
+        // getOutputParams can return garbage
+        if (m_rxDev->getOutputParams(&vp) &&
+            valid_resolution(vp.width, vp.height))
+            break;
+        LOG(Logger::NOTICE) << "Invalid Output Params, but no retrying." << flush;
+        usleep(500000);
+    } while (0);
+
+    // Just set up some usable CVBS input settings, assuming there isn't any video input connected
+    if (!set_input_format(ENCS_CVBS, 720, 576, 1, 50, 1.333333, 0))
+        return false;
+
+    m_rxDev->setOutputBusMode(RXOBM_656_10);
+
+    audio_CX2081x audio_CX2081x(*m_fx2);
+    audio_CX2081x.init();
+
+    LOG(Logger::NOTICE) << "Audio input initialized." << flush;
+
+    m_video_initialized = HAPI_VIDEO_CAPTURE_SOURCE_CVBS;
+    return true;
+}
+
 bool HauppaugeDev::init_component(void)
 {
     if (m_video_initialized != HAPI_VIDEO_CAPTURE_SOURCE_COMPONENT)
@@ -561,8 +598,15 @@ bool HauppaugeDev::StartEncoding(void)
     switch (m_params.videoInput)
     {
         case HAPI_VIDEO_CAPTURE_SOURCE_CVBS:
-          if (!init_cvbs())
-              return false;
+          if (m_params.radio) {
+              LOG(Logger::NOTICE) << "Init analog audio" << flush;
+              if (!init_analog_audio())
+                  return false;
+          } else {
+              LOG(Logger::NOTICE) << "Init CVBS" << flush;
+              if (!init_cvbs())
+                  return false;
+          }
           break;
         case HAPI_VIDEO_CAPTURE_SOURCE_COMPONENT:
           if (!init_component())

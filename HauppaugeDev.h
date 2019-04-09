@@ -54,6 +54,7 @@ class HauppaugeDev
                           float aspectRatio, float audioSampleRate);
     bool valid_resolution(int width, int height);
     bool init_cvbs(void);
+    bool init_analog_audio(void);
     bool init_component(void);
     bool init_sdi(void);
     bool init_hdmi(void);

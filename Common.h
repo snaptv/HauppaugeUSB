@@ -31,6 +31,7 @@ struct Parameters
 {
     int    verbose;
     bool   audioBoost;
+    bool   radio;
     int    tsBitrate;
     int    videoBitrate;
     int    videoVBRMin;
